@@ -24,6 +24,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
@@ -36,6 +38,11 @@ import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.muzei.WeatherMuzeiSource;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +59,8 @@ import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
-public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
+public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements  GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
     public static final String ACTION_DATA_UPDATED =
             "com.example.android.sunshine.app.ACTION_DATA_UPDATED";
@@ -86,6 +94,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int LOCATION_STATUS_SERVER_INVALID = 2;
     public static final int LOCATION_STATUS_UNKNOWN = 3;
     public static final int LOCATION_STATUS_INVALID = 4;
+    private GoogleApiClient googleApiClient;
 
     public SunshineSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -107,6 +116,12 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         String format = "json";
         String units = "metric";
         int numDays = 14;
+
+        googleApiClient = new GoogleApiClient.Builder(this.getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Wearable.API)
+                .build();
 
         try {
             // Construct the URL for the OpenWeatherMap query
@@ -377,6 +392,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void notifyWeather() {
+        Log.i(LOG_TAG, "notifyWeather ");
         Context context = getContext();
         //checking the last update and notify if it' the first of the day
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -397,6 +413,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // we'll query our contentProvider, as always
                 Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
+
+                googleApiClient.connect();
 
                 if (cursor.moveToFirst()) {
                     int weatherId = cursor.getInt(INDEX_WEATHER_ID);
@@ -451,6 +469,14 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                                     .setContentTitle(title)
                                     .setContentText(contentText);
 
+                    PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/watch_face_data").setUrgent();
+                    putDataMapReq.getDataMap().putString("MAX_TEMPERATURE", high+"");
+                    putDataMapReq.getDataMap().putString("MIN_TEMPERATURE", low+"");
+                    putDataMapReq.getDataMap().putString("FORECAST_PRE", artUrl);
+
+                    PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+                    Wearable.DataApi.putDataItem(googleApiClient, putDataReq);
+
                     // Make something interesting happen when the user clicks on the notification.
                     // In this case, opening the app is sufficient.
                     Intent resultIntent = new Intent(context, MainActivity.class);
@@ -479,6 +505,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                     editor.commit();
                 }
                 cursor.close();
+
+                if (googleApiClient != null && googleApiClient.isConnected()) {
+                    googleApiClient.disconnect();
+                }
             }
         }
     }
@@ -635,5 +665,21 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences.Editor spe = sp.edit();
         spe.putInt(c.getString(R.string.pref_location_status_key), locationStatus);
         spe.commit();
+    }
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
