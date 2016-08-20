@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Advanced Android Sample App
 ===================================
 
@@ -50,3 +51,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
 
+=======
+# Go_Ubiquitous
+Udacity Android NanoDegree Program Project 6
+>>>>>>> 7677368499226bc3f351c3fe49fc1d9165736cd5
