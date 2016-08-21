@@ -106,7 +106,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         private int specW, specH;
         private View myLayout;
-        private TextView day, date, month, hour, minute, second, year, hightemp, lowtemp;
+        private TextView time, date, hightemp, lowtemp;
         private ImageView weatherImage;
         private Context mContext;
         private final Point displaySize = new Point();
@@ -153,18 +153,14 @@ public class MyWatchFace extends CanvasWatchFaceService {
             specH = View.MeasureSpec.makeMeasureSpec(displaySize.y,
                     View.MeasureSpec.EXACTLY);
 
-            day = (TextView) myLayout.findViewById(R.id.day);
+            time = (TextView) myLayout.findViewById(R.id.time_text);
             date = (TextView) myLayout.findViewById(R.id.date);
-            month = (TextView) myLayout.findViewById(R.id.month);
-            hour = (TextView) myLayout.findViewById(R.id.hour);
-            minute = (TextView) myLayout.findViewById(R.id.minute);
-            year = (TextView) myLayout.findViewById(R.id.year);
 
             hightemp = (TextView) myLayout.findViewById(R.id.hightemp);
             lowtemp = (TextView) myLayout.findViewById(R.id.lowtemp);
             weatherImage = (ImageView) myLayout.findViewById(R.id.weather_icon);
 
-            mContext = getApplicationContext();
+            mContext = MyWatchFace.this;
 
 //            second = (TextView) myLayout.findViewById(R.id.second);
 
@@ -214,7 +210,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 for (DataEvent event : dataEvents) {
                     if (event.getType() == DataEvent.TYPE_CHANGED) {
                         DataItem item = event.getDataItem();
-                        processConfigurationFor(item);
+                        processItem(item);
                     }
                 }
 
@@ -227,7 +223,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             @Override
             public void onResult(DataItemBuffer dataItems) {
                 for (DataItem item : dataItems) {
-                    processConfigurationFor(item);
+                    processItem(item);
                 }
 
                 dataItems.release();
@@ -235,8 +231,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }
         };
 
-        private void processConfigurationFor(DataItem item) {
-            Log.i(TAG, "processConfigurationFor: "+item);
+        private void processItem(DataItem item) {
+            Log.i(TAG, "processItem: "+item);
             if ("/watch_face_data".equals(item.getUri().getPath())) {
                 DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                 if (dataMap.containsKey("MAX_TEMPERATURE")) {
@@ -251,10 +247,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
                 if (dataMap.containsKey("FORECAST_PRE")) {
                     String tempWeatherIcon = dataMap.getString("FORECAST_PRE");
+                    Log.i(TAG, "containsKey: "+tempWeatherIcon);
                     Glide.with(mContext)
                             .load(tempWeatherIcon)
                             .error(R.drawable.ic_clear)
-                            .crossFade()
                             .into(weatherImage);
                 }
             }
@@ -319,15 +315,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
 
-                // Show/hide the seconds fields
-                if (inAmbientMode) {
-                    second.setVisibility(View.GONE);
-                    //myLayout.findViewById(R.id.second_label).setVisibility(View.GONE);
-                } else {
-                    second.setVisibility(View.VISIBLE);
-                    //myLayout.findViewById(R.id.second_label).setVisibility(View.VISIBLE);
-                }
-
                 // Switch between bold & normal font
                 Typeface font = Typeface.create("sans-serif-condensed",
                         inAmbientMode ? Typeface.NORMAL : Typeface.BOLD);
@@ -374,15 +361,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
             mTime.setToNow();
 
-            hour.setText(String.format("%02d", mTime.hour));
-            minute.setText(String.format("%02d", mTime.minute));
+            SimpleDateFormat hourMinute = new SimpleDateFormat("HH:mm");
+            time.setText(hourMinute.format(mTime.toMillis(false)));
+            //minute.setText(String.format("%02d", mTime.minute));
 
-            day.setText(String.format("%ta", mTime.toMillis(false)));
-            date.setText(String.format("%02d", mTime.monthDay));
-            SimpleDateFormat month_date = new SimpleDateFormat("MMM");
-            ;
-            month.setText(month_date.format(mTime.toMillis(false)));
-            year.setText(String.format("%02d", mTime.year));
+            SimpleDateFormat fulldateformat = new SimpleDateFormat("E, MMM dd yyyy");
+            date.setText(fulldateformat.format(mTime.toMillis(false)));
 
             if (!mAmbient) {
                 //second.setText(String.format("%02d", mTime.second));

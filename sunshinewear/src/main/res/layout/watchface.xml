@@ -2,148 +2,97 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
-    >
+    android:padding="8dp">
 
     <LinearLayout
         android:id="@+id/layouttime"
-        android:orientation="horizontal"
-        android:layout_marginTop="14dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/time_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="18"
-            android:id="@+id/hour"
-            android:layout_marginLeft="30dp"
+            android:text="15:50"
             android:textColor="#fff"
-            android:textStyle="bold"
             android:textSize="45dp"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=":"
-            android:id="@+id/seperator"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="45dp"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="53"
-            android:id="@+id/minute"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="45dp"
-            />
+            android:textStyle="bold" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layoutdate"
-        android:layout_below="@+id/layouttime"
-        android:orientation="horizontal"
-        android:layout_marginLeft="15dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layouttime"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="THU"
-            android:id="@+id/day"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:textAllCaps="true"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=","
-            android:id="@+id/comma"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="THU"
             android:id="@+id/date"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:textAllCaps="true"
-            />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="THU"
-            android:id="@+id/month"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
+            android:text="FRI, JUL 14 2015"
             android:textAllCaps="true"
-            />
+            android:textColor="#fff"
+            android:textSize="15dp"
+            android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="THU"
-            android:id="@+id/year"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:textAllCaps="true"
-            />
-     </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
-        android:layout_below="@+id/layoutdate"
-        android:orientation="horizontal"
-        android:layout_marginLeft="15dp"
+        android:id="@+id/layoutseperate"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutdate"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/line_separator"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/line_seperator4" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/layoutseperate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/weather_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_clear"/>
+            android:src="@drawable/ic_clear" />
 
         <TextView
+            android:id="@+id/hightemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="25"
-            android:id="@+id/hightemp"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
             android:textAllCaps="true"
-            />
+            android:textColor="#fff"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/lowtemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="15"
-            android:id="@+id/lowtemp"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
             android:textAllCaps="true"
-            />
+            android:textColor="#fff"
+            android:textSize="20dp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 
